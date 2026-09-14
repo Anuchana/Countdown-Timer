@@ -1,0 +1,600 @@
+/* =========================================================
+   globals.css — Countdown Timer Design System
+   Follow AGENTS.md: glassmorphism card, spring digit rolls,
+   Apple-style motion defaults, full a11y support.
+   ========================================================= */
+
+@import "tailwindcss";
+
+/* ── Google Font (Inter via next/font — CSS variable injected) ── */
+
+/* ── Design Tokens ── */
+:root {
+  --font-sans: var(--font-inter, 'Inter', system-ui, sans-serif);
+
+  /* Colors */
+  --clr-white: #ffffff;
+  --clr-white-dim: rgba(255, 255, 255, 0.72);
+  --clr-white-muted: rgba(255, 255, 255, 0.45);
+  --clr-card-bg: rgba(10, 12, 10, 0.45);
+  --clr-card-border: rgba(255, 255, 255, 0.08);
+  --clr-overlay: rgba(0, 0, 0, 0.52);
+  --clr-blue: #2563eb;
+  --clr-blue-hover: #1d4ed8;
+  --clr-blue-active: #1e3a8a;
+  --clr-error: #f87171;
+  --clr-success: #4ade80;
+  --clr-input-bg: rgba(255, 255, 255, 0.12);
+  --clr-input-focus-border: rgba(255, 255, 255, 0.6);
+
+  /* Radii */
+  --radius-card: 28px;
+  --radius-pill: 9999px;
+  --radius-icon: 50%;
+
+  /* Spacing */
+  --sp-xs: 0.5rem;
+  --sp-sm: 0.75rem;
+  --sp-md: 1.25rem;
+  --sp-lg: 2rem;
+  --sp-xl: 3rem;
+
+  /* Motion — cubic-bezier approximations for spring values from AGENTS.md
+     Digit roll: damping=1.0, response=0.35  → critically damped, no bounce
+     Button press: damping=0.8, response=0.3 → slight bounce on release      */
+  --ease-spring-critical: cubic-bezier(0.34, 1.0, 0.64, 1);
+  --ease-spring-bounce:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-fast: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Page root — full-screen centering ── */
+.page-root {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: #0a0c0a; /* fallback while bg loads */
+}
+
+/* ── Background layer ── */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  background-image: url('/forest-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  /* Slightly darken + desaturate the photo for text legibility */
+  filter: brightness(0.55) saturate(0.9);
+  z-index: 0;
+}
+
+/* ── Hero card — glassmorphism material (AGENTS.md §2.4) ── */
+.hero-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 900px;
+  min-height: 560px;
+  background: var(--clr-card-bg);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--clr-card-border);
+  border-top: 1px solid rgba(255, 255, 255, 0.12); /* light-catching top edge */
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  padding: 2rem 2.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+
+  /* Card entrance — critically damped spring (damping=1.0, response=0.4) */
+  animation: card-entrance 0.4s var(--ease-spring-critical) both;
+}
+
+@keyframes card-entrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Navigation ── */
+.hero-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-sm);
+}
+
+.nav-logo {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: var(--clr-white);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: var(--sp-md);
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  color: var(--clr-white-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  transition: color 150ms var(--ease-out-fast);
+  border-radius: 4px;
+  padding: 2px 0;
+}
+
+.nav-link:hover {
+  color: var(--clr-white);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 4px;
+}
+
+/* ── Spacer ── */
+.hero-spacer {
+  flex: 1;
+}
+
+/* ── Countdown section ── */
+.hero-countdown {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-lg);
+}
+
+.countdown-display {
+  width: 100%;
+}
+
+.countdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  flex-wrap: wrap;
+}
+
+/* ── Digit block ── */
+.digit-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 5rem;
+}
+
+.digit-stack {
+  position: relative;
+  /* Height tracks the font size so overflow clips the slide animation */
+  width: clamp(3.5rem, 10vw, 6.5rem);
+  height: clamp(3rem, 9.5vw, 6rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Shared digit styles — both layers sit absolutely centred */
+.digit {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Typography: AGENTS.md §3 */
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -0.02em;
+  color: var(--clr-white);
+  /* Compositor-only properties — keeps 60fps */
+  will-change: transform, opacity;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Outgoing layer — sits beneath, Web Animations animates it out */
+.digit-bot {
+  z-index: 1;
+}
+
+/* Incoming / current layer — sits on top, Web Animations springs it in */
+.digit-top {
+  z-index: 2;
+}
+
+.digit-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--clr-white-muted);
+  line-height: 1.4;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Separator colon */
+.countdown-separator {
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  font-weight: 800;
+  color: var(--clr-white-dim);
+  line-height: 1.0;
+  align-self: flex-start;
+  padding-top: 0.05em;
+  user-select: none;
+  letter-spacing: -0.02em;
+}
+
+/* ── Time is up state ── */
+.time-up {
+  text-align: center;
+  padding: var(--sp-lg) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-sm);
+  animation: card-entrance 0.4s var(--ease-spring-critical) both;
+}
+
+.time-up-emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.time-up-text {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--clr-white);
+  line-height: 1.05;
+}
+
+.time-up-sub {
+  font-size: 1rem;
+  color: var(--clr-white-muted);
+  font-weight: 400;
+}
+
+/* ── Date picker ── */
+.hero-picker {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--sp-md);
+}
+
+.picker-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.picker-label {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--clr-white-muted);
+}
+
+.picker-input {
+  background: var(--clr-input-bg);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--radius-pill);
+  color: var(--clr-white);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  padding: 0.5rem 1.25rem;
+  outline: none;
+  cursor: pointer;
+  /* Immediate focus feedback (AGENTS.md §2.2) */
+  transition: border-color 0.25s var(--ease-spring-critical),
+              box-shadow 0.25s var(--ease-spring-critical);
+  /* Color scheme for the native date picker chrome */
+  color-scheme: dark;
+}
+
+.picker-input:focus {
+  border-color: var(--clr-input-focus-border);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+
+.picker-input:focus-visible {
+  border-color: var(--clr-input-focus-border);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+/* ── Subscribe section ── */
+.hero-subscribe {
+  margin-bottom: var(--sp-lg);
+}
+
+.subscribe-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-md);
+}
+
+.subscribe-heading {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--clr-white-dim);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+}
+
+.subscribe-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Pill container — input + button as ONE visual unit (AGENTS.md §2.3) */
+.subscribe-pill {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  transition: border-color 0.25s var(--ease-spring-critical);
+}
+
+.subscribe-pill:focus-within {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+}
+
+.subscribe-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--clr-white);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  padding: 0.7rem 1.25rem;
+  min-width: 0;
+}
+
+.subscribe-input::placeholder {
+  color: var(--clr-white-muted);
+}
+
+.subscribe-btn {
+  flex-shrink: 0;
+  background: var(--clr-blue);
+  color: var(--clr-white);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.65rem 1.4rem;
+  margin: 3px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  /* Hover transitions */
+  transition: background-color 150ms var(--ease-out-fast),
+              transform 100ms ease-out;
+  /* Pointer-down feedback MUST render on pointer-down (AGENTS.md §2.3) */
+}
+
+.subscribe-btn:hover:not(:disabled) {
+  background: var(--clr-blue-hover);
+}
+
+.subscribe-btn:active:not(:disabled) {
+  transform: scale(0.97);
+  background: var(--clr-blue-active);
+  transition: transform 100ms ease-out;
+}
+
+.subscribe-btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.subscribe-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 2px;
+}
+
+/* Inline feedback — near input, not a distant toast (AGENTS.md §2.3) */
+.subscribe-feedback {
+  font-size: 0.82rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.subscribe-feedback--error {
+  color: var(--clr-error);
+}
+
+.subscribe-feedback--success {
+  color: var(--clr-success);
+}
+
+/* ── Social icons ── */
+.hero-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.social-row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-md);
+}
+
+.social-icon-btn {
+  /* Extra hit-padding beyond visible circle (AGENTS.md §2.5: ~10px) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-icon);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--clr-white-dim);
+  text-decoration: none;
+  /* GPU-composite only */
+  transition: color 150ms var(--ease-out-fast),
+              background-color 150ms var(--ease-out-fast),
+              transform 100ms ease-out;
+  will-change: transform;
+  /* The visible icon is 40px, but the tap target is 44px — center it */
+  padding: 10px;
+}
+
+.social-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--clr-white);
+}
+
+/* Press-down: instant scale (AGENTS.md §2.5) */
+.social-icon-btn:active {
+  transform: scale(0.88);
+  background: rgba(255, 255, 255, 0.22);
+  transition: transform 80ms ease-out;
+}
+
+/* Spring-back on release — via a short animation after active state ends */
+.social-icon-btn:not(:active) {
+  /* bounce: damping=0.8, response=0.3 */
+  transition: transform 300ms var(--ease-spring-bounce),
+              color 150ms var(--ease-out-fast),
+              background-color 150ms var(--ease-out-fast);
+}
+
+.social-icon-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.7);
+  outline-offset: 3px;
+}
+
+/* ── Responsive — mobile first ── */
+@media (max-width: 600px) {
+  .hero-card {
+    padding: 1.5rem 1.25rem 2rem;
+    border-radius: 20px;
+  }
+
+  .nav-links {
+    gap: 0.75rem;
+  }
+
+  .nav-link {
+    font-size: 0.8rem;
+  }
+
+  .countdown-row {
+    gap: 0.35rem;
+  }
+
+  .countdown-separator {
+    margin-top: 0.05em;
+  }
+
+  .digit-block {
+    min-width: 3.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .nav-links {
+    display: none; /* Collapse on very small screens */
+  }
+}
+
+/* ── Accessibility: prefers-reduced-motion (AGENTS.md §5) ── */
+@media (prefers-reduced-motion: reduce) {
+  /* Card entrance — remove transform, keep opacity only */
+  @keyframes card-entrance {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Digit roll — plain cross-fade only, no vertical motion */
+  .digit {
+    transition: opacity 200ms ease;
+    transform: none !important;
+  }
+
+  /* Button press: only `:active` scale remains (no spring bounce) */
+  .subscribe-btn:active:not(:disabled) {
+    transform: scale(0.98);
+    transition: transform 80ms ease-out;
+  }
+
+  .social-icon-btn:active {
+    transform: scale(0.95);
+    transition: transform 80ms ease-out;
+  }
+
+  .social-icon-btn:not(:active) {
+    transition: color 150ms ease, background-color 150ms ease;
+    transform: none;
+  }
+}
+
+/* ── Accessibility: prefers-contrast: more (AGENTS.md §5) ── */
+@media (prefers-contrast: more) {
+  .hero-card {
+    /* Near-solid background, drop blur, add visible border */
+    background: rgba(5, 8, 5, 0.92);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+  }
+
+  .digit-label {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .subscribe-heading {
+    color: var(--clr-white);
+  }
+
+  .nav-link {
+    color: var(--clr-white);
+  }
+}
