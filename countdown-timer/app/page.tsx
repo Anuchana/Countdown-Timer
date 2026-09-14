@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import CountdownTimer from '@/components/CountdownTimer';
 import DateTimePicker from '@/components/DateTimePicker';
-import SubscribeForm from '@/components/SubscribeForm';
-import SocialIcons from '@/components/SocialIcons';
+
 
 const STORAGE_KEY = 'countdown-target-date';
 
@@ -69,17 +68,7 @@ export default function Home() {
         <section className="hero-picker" aria-label="Set target date">
           <DateTimePicker value={targetDate} onChange={handleDateChange} />
         </section>
-
-        {/* Subscribe form */}
-        <section className="hero-subscribe" aria-label="Subscribe section">
-          <SubscribeForm />
-        </section>
-
-        {/* Social icons */}
-        <footer className="hero-footer" aria-label="Social media">
-          <SocialIcons />
-        </footer>
-
+     
       </div>
     </main>
   );

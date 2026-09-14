@@ -65,14 +65,17 @@ export default function DigitBlock({ value, label }: DigitBlockProps) {
   }, [value]);
 
   return (
-    <div className="digit-block" aria-label={`${value} ${label}`}>
+    // suppressHydrationWarning on the wrapper: the aria-label includes the live
+    // second count which will always differ by ~1 between SSR and client hydration.
+    <div className="digit-block" aria-label={`${value} ${label}`} suppressHydrationWarning>
       <div className="digit-stack">
         {/* Bottom layer: the outgoing digit (animates out on change) */}
-        <span ref={botRef} className="digit digit-bot" aria-hidden="true">
+        {/* suppressHydrationWarning: Date.now() advances during SSR→client round-trip */}
+        <span ref={botRef} className="digit digit-bot" aria-hidden="true" suppressHydrationWarning>
           {pad(value)}
         </span>
         {/* Top layer: the incoming / current digit (always up-to-date) */}
-        <span ref={topRef} className="digit digit-top">
+        <span ref={topRef} className="digit digit-top" suppressHydrationWarning>
           {pad(value)}
         </span>
       </div>

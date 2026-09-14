@@ -4,9 +4,8 @@
    Apple-style motion defaults, full a11y support.
    ========================================================= */
 
-@import "tailwindcss";
-
 /* ── Google Font (Inter via next/font — CSS variable injected) ── */
+/* NOTE: Tailwind removed — all styles are custom CSS classes in this file */
 
 /* ── Design Tokens ── */
 :root {
@@ -76,12 +75,20 @@ html, body {
 .bg-layer {
   position: fixed;
   inset: 0;
-  background-image: url('/forest-bg.jpg');
+  /* WebP (289KB) with JPEG fallback (389KB) — 74% smaller than original 1.1MB */
+  background-image: url('/forest-bg.webp');
   background-size: cover;
   background-position: center;
   /* Slightly darken + desaturate the photo for text legibility */
   filter: brightness(0.55) saturate(0.9);
   z-index: 0;
+}
+
+/* JPEG fallback for browsers without WebP support */
+@supports not (background-image: url('/forest-bg.webp')) {
+  .bg-layer {
+    background-image: url('/forest-bg-opt.jpg');
+  }
 }
 
 /* ── Hero card — glassmorphism material (AGENTS.md §2.4) ── */
