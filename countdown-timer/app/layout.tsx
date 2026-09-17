@@ -12,12 +12,9 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'Coming Soon — We Launch Soon',
-  description:
-    'Our new experience is coming. Subscribe to be notified the moment we go live.',
   keywords: ['coming soon', 'launch', 'countdown timer'],
   openGraph: {
     title: 'Coming Soon — We Launch Soon',
-    description: 'Subscribe to be notified the moment we go live.',
     type: 'website',
   },
 };

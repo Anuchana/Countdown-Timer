@@ -1,74 +1,42 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import * as React from 'react';
 import CountdownTimer from '@/components/CountdownTimer';
 import DateTimePicker from '@/components/DateTimePicker';
 
-
-const STORAGE_KEY = 'countdown-target-date';
-
-function getDefaultTarget(): string {
-  // Default: 30 days from now
-  const d = new Date();
-  d.setDate(d.getDate() + 30);
-  // Format to datetime-local string (YYYY-MM-DDTHH:MM)
-  return d.toISOString().slice(0, 16);
-}
-
 export default function Home() {
-  const [targetDate, setTargetDate] = useState<string>(getDefaultTarget);
-  const [mounted, setMounted] = useState(false);
-
-  // Hydrate from localStorage on mount (avoid SSR mismatch)
-  useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      setTargetDate(stored);
-    }
-    setMounted(true);
-  }, []);
-
-  function handleDateChange(value: string) {
-    setTargetDate(value);
-    localStorage.setItem(STORAGE_KEY, value);
-  }
+  // Default target date to 3 days from now
+  const [targetDate, setTargetDate] = React.useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    // Format to yyyy-MM-ddThh:mm for datetime-local
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const localISOTime = (new Date(d.getTime() - tzoffset)).toISOString().slice(0, 16);
+    return localISOTime;
+  });
 
   return (
     <main className="page-root">
-      {/* Full-bleed background */}
-      <div className="bg-layer" aria-hidden="true" />
+      <div className="bg-layer" />
+      <div className="hero-card">
+        
+        <header className="hero-header">
+          <div className="nav-logo">PIXAR</div>
+        </header>
 
-      {/* Hero card — glassmorphism material */}
-      <div className="hero-card" role="region" aria-label="Coming soon countdown">
-
-        {/* Navigation */}
-        <nav className="hero-nav" aria-label="Site navigation">
-          <span className="nav-logo" aria-label="PIXAR">PIXAR</span>
-          <ul className="nav-links" role="list">
-            {['About', 'Services', 'Products', 'News', 'Contact'].map((link) => (
-              <li key={link}>
-                <a href="#" className="nav-link" aria-label={link}>
-                  {link}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        {/* Spacer — pushes content toward center */}
+        <h1 className="hero-tagline">
+          Own Your Time. Beat the Deadline.
+        </h1>
         <div className="hero-spacer" />
 
-        {/* Countdown display — always render, no mounted guard needed
-            CountdownTimer is 'use client' so it's safe to render always */}
-        <section className="hero-countdown" aria-label="Countdown timer">
+        <div className="hero-countdown">
           <CountdownTimer targetDate={targetDate} />
-        </section>
+        </div>
 
-        {/* Date picker */}
-        <section className="hero-picker" aria-label="Set target date">
-          <DateTimePicker value={targetDate} onChange={handleDateChange} />
-        </section>
-     
+        <div className="hero-picker">
+          <DateTimePicker value={targetDate} onChange={setTargetDate} />
+        </div>
+
       </div>
     </main>
   );

@@ -36,8 +36,10 @@ export default function CountdownTimer({ targetDate }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>(() => calculateTimeLeft(targetDate));
 
   useEffect(() => {
-    // Immediately recalculate when targetDate changes (don't wait for next tick)
-    setTimeLeft(calculateTimeLeft(targetDate));
+    // Immediately recalculate when targetDate changes without triggering sync setState warning
+    setTimeout(() => {
+      setTimeLeft(calculateTimeLeft(targetDate));
+    }, 0);
 
     const timer = setInterval(() => {
       setTimeLeft(calculateTimeLeft(targetDate));
