@@ -81,7 +81,7 @@ body {
   position: fixed;
   inset: 0;
   /* WebP (289KB) with JPEG fallback (389KB) — 74% smaller than original 1.1MB */
-  background-image: url('/Countdown-Timer/forest-bg.webp');
+  background-image: url('/forest-bg.webp');
   background-size: cover;
   background-position: center;
   /* Slightly darken + desaturate the photo for text legibility */
@@ -90,9 +90,9 @@ body {
 }
 
 /* JPEG fallback for browsers without WebP support */
-@supports not (background-image: url('/Countdown-Timer/forest-bg.webp')) {
+@supports not (background-image: url('/forest-bg.webp')) {
   .bg-layer {
-    background-image: url('/Countdown-Timer/forest-bg-opt.jpg');
+    background-image: url('/forest-bg-opt.jpg');
   }
 }
 
