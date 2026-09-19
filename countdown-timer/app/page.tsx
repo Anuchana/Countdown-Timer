@@ -27,7 +27,6 @@ export default function Home() {
         <h1 className="hero-tagline">
           Own Your Time. Beat the Deadline.
         </h1>
-        <div className="hero-spacer" />
 
         <div className="hero-countdown">
           <CountdownTimer targetDate={targetDate} />
